@@ -78,14 +78,10 @@ function buildVolumeMounts(
 
     // Shadow .env so the agent cannot read secrets from the mounted project root.
     // Credentials are injected by the credential proxy, never exposed to containers.
-    const envFile = path.join(projectRoot, '.env');
-    if (fs.existsSync(envFile)) {
-      mounts.push({
-        hostPath: '/dev/null',
-        containerPath: '/workspace/project/.env',
-        readonly: true,
-      });
-    }
+    // NOTE: Apple Containers doesn't support file mounts, so .env shadowing is
+    // handled inside the container's entrypoint.sh via `mount --bind /dev/null`.
+    // The entrypoint runs as root (RUN_UID/RUN_GID passed), shadows .env, then
+    // drops privileges via setpriv. See container/Dockerfile for details.
 
     // Main also gets its group folder as the working directory
     mounts.push({
