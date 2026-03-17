@@ -122,12 +122,10 @@ jobs:
               continue
             fi
 
-            # Update package-lock.json to match merged package.json
-            npm install --package-lock-only
+            # Update package-lock.json and install packages
+            npm install
             git add package-lock.json
             git commit -m "chore: update package-lock.json after merge" --allow-empty || true
-
-            npm ci
 
             if ! npm run build; then
               echo "::warning::Build failed for $BRANCH"
